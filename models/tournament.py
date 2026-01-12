@@ -1,7 +1,3 @@
-import random
-from players import Player
-
-
 class Tournament:
     def __init__(self,
                  name,
@@ -23,17 +19,10 @@ class Tournament:
         return (f'{self.name} '
                 f'{self.place}')
 
-    def add_player(self, player):
-        self.players_list.append(player)
-
-    def shuffle_palyers(self):
-        random.shuffle(self.players_list)
 
 
-player1 = Player('Edouard', 'Plastik', '5/12/1963', 'AN123456')
-player2 = Player('Gerard', 'Contemporain', '12/05/1936', 'NA654321')
-player3 = Player('Gaspard', 'Chitect', '3/09/1393', 'BC4657981')
-player4 = Player('Baltasar', 'Delatable', '25/12/0003', 'CB649785')
+
+
 
 tn1 = Tournament('Coco', 'Tatouine', 'A long time ago', '01/12/-4768', '')
 

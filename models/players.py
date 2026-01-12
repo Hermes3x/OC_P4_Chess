@@ -14,6 +14,9 @@ class Player:
                 f'{self.first_name} | '
                 f'Identifiant National : {self.national_chess_id} | '
                 f'Score : {self.score}')
+    
+    def __repr__(self):
+        return (f'Player({self.first_name!r},{self.last_name!r})')
 
     def add_point(self, points):
         """Ajoute des points au score du joueur : 0.5 ou 1"""
