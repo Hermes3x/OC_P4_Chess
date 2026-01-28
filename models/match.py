@@ -7,8 +7,10 @@ class Match:
         self.player1_color = None
         self.player2_color = None
         self.colors = ["white", "Black"]
-        self.player1_score = None
-        self.player2_score = None
+        self.player1_score = 0
+        self.player2_score = 0
+        self.match = ([player1, self.player1_score],
+                      [player2, self.player2_score])
 
     def draw_color(self):
         random.shuffle(self.colors)
@@ -21,17 +23,21 @@ class Match:
         if self.players_pair[0] == winner:
             self.player1_score = 1.0
             self.player2_score = 0.0
-            match_score = (self.player1_score, self.player2_score)
         elif self.players_pair[1] == winner:
             self.player1_score = 0.0
             self.player2_score = 1.0
-            match_score = (self.player1_score, self.player2_score)
         else:
             self.player1_score = 0.5
             self.player2_score = 0.5
-            match_score = (self.player1_score, self.player2_score)
-        return f'Scores du match {match_score}'
+
+        self.players_pair[0].score += self.player1_score
+        self.players_pair[1].score += self.player2_score
+
+        self.match = ([self.players_pair[0], self.player1_score],
+                      [self.players_pair[1], self.player2_score])
+        return f'Scores du match {self.player1_score} - {self.player2_score}'
 
     def __str__(self):
         p1, p2 = self.players_pair
-        return (f'Match {p1.first_name} vs {p2.first_name}')
+        return (f'Match {p1.first_name} vs {p2.first_name} | '
+                f'Résultat : {self.player1_score}-{self.player2_score}')
