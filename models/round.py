@@ -3,16 +3,16 @@ import datetime
 
 
 class Round:
-    def __init__(self, tournament, date=None):
+    def __init__(self, tournament, start_date=None):
         self.tournament = tournament
         self.tournament_players = tournament.tournament_players
-        # self.rounds_id = 1
-        self.end_date = None
+        self.rounds_id = tournament.actual_round
         self.matchs = []
-        if date is None:
-            self.date = datetime.date.today()
+        if start_date is None:
+            self.start_date = datetime.date.today()
         else:
-            self.date = date
+            self.start_date = start_date
+        self.end_date = None
 
     def create_matchs(self):
         players_pool = self.tournament_players.copy()
@@ -34,6 +34,26 @@ class Round:
             p1.add_opponent(opponent)
             opponent.add_opponent(p1)
 
+    def close_round(self):
+        all_finished = all((m.player1_score + m.player2_score)
+                           > 0
+                           for m in self.matchs)
+        if not all_finished:
+            # print(f"Le round {self.rounds_id} n'est pas terminé")
+            return
+
+        self.end_date = datetime.date.today()
+        print(f"🏁 Round terminé à {self.end_date}")
+        return 
+
     def __str__(self):
         match_str = "\n".join(str(match) for match in self.matchs)
         return f'Date de démarrage : {self.date}\n{match_str}'
+
+    def to_dict(self):
+        return {
+            'round_id': f"Round {self.rounds_id}",
+            'start_date': str(self.start_date),
+            'end_date': str(self.end_date) if self.end_date else None,
+            'matchs': [match.to_dict() for match in self.matchs]
+            }

@@ -41,3 +41,8 @@ class Match:
         p1, p2 = self.players_pair
         return (f'Match {p1.first_name} vs {p2.first_name} | '
                 f'Résultat : {self.player1_score}-{self.player2_score}')
+
+    def to_dict(self):
+        p1, p2 = self.players_pair
+        return ([p1.national_chess_id, self.player1_score],
+                [p2.national_chess_id, self.player2_score])

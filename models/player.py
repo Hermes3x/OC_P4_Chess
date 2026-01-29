@@ -21,3 +21,20 @@ class Player:
                 f' {self.national_chess_id}'
                 f' {self.score}'
                 f' {self.opponents}')
+
+    def to_dict(self):
+        return {"first_name": self.first_name,
+                "last_name": self.last_name,
+                "birth_date": self.birth_date,
+                "national_chess_id": self.national_chess_id,
+                }
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            birth_date=data['birth_date'],
+            national_chess_id=data['national_chess_id'],
+            score=0
+        )

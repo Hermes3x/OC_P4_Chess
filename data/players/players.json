@@ -1,0 +1,50 @@
+[
+    {
+        "first_name": "Voltaire",
+        "last_name": "Arouet",
+        "birth_date": "21/11/1694",
+        "national_chess_id": "VA00001"
+    },
+    {
+        "first_name": "Marie",
+        "last_name": "Curie",
+        "birth_date": "07/11/1867",
+        "national_chess_id": "MC12345"
+    },
+    {
+        "first_name": "Albert",
+        "last_name": "Einstein",
+        "birth_date": "14/03/1879",
+        "national_chess_id": "AE54321"
+    },
+    {
+        "first_name": "Simone",
+        "last_name": "Weil",
+        "birth_date": "03/02/1909",
+        "national_chess_id": "SW11111"
+    },
+    {
+        "first_name": "Ren\u00e9",
+        "last_name": "Descartes",
+        "birth_date": "31/03/1596",
+        "national_chess_id": "RD22222"
+    },
+    {
+        "first_name": "Louis",
+        "last_name": "Pasteur",
+        "birth_date": "27/12/1822",
+        "national_chess_id": "LP44444"
+    },
+    {
+        "first_name": "Jeanne",
+        "last_name": "dArc",
+        "birth_date": "06/01/1412",
+        "national_chess_id": "JA33333"
+    },
+    {
+        "first_name": "L\u00e9on",
+        "last_name": "Blum",
+        "birth_date": "09/04/1872",
+        "national_chess_id": "LB98765"
+    }
+]
