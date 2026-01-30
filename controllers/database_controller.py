@@ -81,7 +81,7 @@ class DatabaseController:
         print(f"✅ Tournoi '{tournament.name}' chargé avec succès !")
         return tournament
     
-    def _load_rounds(seld, tournament, rounds_data, players_map):
+    def _load_rounds(self, tournament, rounds_data, players_map):
         from models.round import Round
         from models.match import Match
 
@@ -92,8 +92,8 @@ class DatabaseController:
             round_obj.end_date = round_dict['end_date']
 
             for match_data in round_dict['matchs']:
-                id1, score1 = match_data[0]
-                id2, score2 = match_data[1]
+                id1, score1, color1 = match_data[0]
+                id2, score2, color2 = match_data[1]
 
                 p1 = players_map.get(id1)
                 p2 = players_map.get(id2)
@@ -102,8 +102,8 @@ class DatabaseController:
                     match_obj = Match(p1, p2)
                     match_obj.player1_score = score1
                     match_obj.player2_score = score2
-                    # match_obj.player1_color = color1
-                    # match_obj.player2_color = color2
+                    match_obj.player1_color = color1
+                    match_obj.player2_color = color2
 
                     p1.score += score1
                     p2.score += score2

@@ -30,6 +30,7 @@ class Round:
                 opponent = players_pool.pop(0)
 
             match = Match(p1, opponent)
+            match.draw_color()
             self.matchs.append(match)
             p1.add_opponent(opponent)
             opponent.add_opponent(p1)

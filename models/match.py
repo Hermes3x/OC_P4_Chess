@@ -44,5 +44,6 @@ class Match:
 
     def to_dict(self):
         p1, p2 = self.players_pair
-        return ([p1.national_chess_id, self.player1_score],
-                [p2.national_chess_id, self.player2_score])
+        return ([p1.national_chess_id, self.player1_score, self.player1_color],
+                [p2.national_chess_id, self.player2_score, self.player2_color],
+                )
