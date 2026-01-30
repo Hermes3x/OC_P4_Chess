@@ -36,7 +36,7 @@ class DatabaseController:
 
         print(f"📂 Chargement réussi : {len(loaded_players)} joueurs récupérés.")
         return loaded_players
-    
+
     def save_tournament_to_json(self, tournament):
         clean_name = tournament.name.replace(" ", "_").lower()
         filename = f"data/tournaments/{clean_name}.json"
@@ -46,14 +46,14 @@ class DatabaseController:
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, 'w') as file:
             json.dump(data, file, indent=4)
-        
+
         print(f"💾 Tournoi sauvegardé : {filename}")
-    
+
     def load_tournament(self, filename):
         if not os.path.exists(filename):
             print(f"❌ Fichier introuvable : {filename}")
             return None
-        
+
         with open(filename, 'r') as file:
             data = json.load(file)
 
@@ -80,7 +80,7 @@ class DatabaseController:
 
         print(f"✅ Tournoi '{tournament.name}' chargé avec succès !")
         return tournament
-    
+
     def _load_rounds(self, tournament, rounds_data, players_map):
         from models.round import Round
         from models.match import Match
