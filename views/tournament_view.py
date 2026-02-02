@@ -1,3 +1,6 @@
+from models.round import Round
+from models.tournament import Tournament
+
 class TournamentView:
     def get_tournament_data(self):
         print("Veuillez renseigner les informations du tournoi")
@@ -37,3 +40,19 @@ class TournamentView:
             "birth_date": birth_date, 
             "national_chess_id": chess_id
             }
+
+    def choose_tournament_json(self):
+        json_name = input("📂 Veuillez saisir le nom du fichier à charger : ")
+        return json_name
+
+    def display_round_matchs(self, round_obj):
+        print(f"\n--- Matchs du round {round_obj.rounds_id} ---")
+        for match in round_obj.matchs:
+            print(f"{match}")
+        print("-----------------------------------")
+
+    def display_final_ranking(self,tournament_obj):
+        print(f"\n--- 🏆 Classement final 🏆 ---")
+        tournament_obj.tournament_players.sort(key=lambda p: (-p.score, p.last_name))
+        for i, player in enumerate(tournament_obj.tournament_players, start = 1):
+            print(f"{i}. {player.first_name} {player.last_name} {player.score} pts")

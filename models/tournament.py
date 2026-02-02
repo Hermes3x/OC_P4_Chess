@@ -1,8 +1,9 @@
 from models.round import Round
+import random
 
 
 class Tournament:
-    def __init__(self, name, place, date, rounds_qty, note):
+    def __init__(self, name, place, date, rounds_qty, note, end_date=None):
         self.name = name
         self.place = place
         self.date = date
@@ -11,6 +12,7 @@ class Tournament:
         self.rounds_list = []
         self.tournament_players = []
         self.note = note
+        self.end_date = end_date
 
     def add_player(self, player):
         self.tournament_players.append(player)
@@ -26,10 +28,13 @@ class Tournament:
             print("Le tournoi est terminé")
             return None
 
-        print(f"🚀 Lancement du Round {self.actual_round + 1}...")
-
-        self.tournament_players.sort(key=lambda p: (-p.score, p.last_name))
         self.actual_round += 1
+
+        if self.actual_round == 1:
+            random.shuffle(self.tournament_players)
+        else:
+            self.tournament_players.sort(key=lambda p: (-p.score, p.last_name))
+
         current_round = Round(self)
         current_round.create_matchs()
         self.rounds_list.append(current_round)
@@ -54,5 +59,6 @@ class Tournament:
             "players_ids": [p.national_chess_id
                             for p in
                             self.tournament_players],
-            "note": self.note
+            "note": self.note,
+            "end_date": self.end_date,
             }

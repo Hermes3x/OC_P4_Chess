@@ -9,7 +9,7 @@ class Round:
         self.rounds_id = tournament.actual_round
         self.matchs = []
         if start_date is None:
-            self.start_date = datetime.date.today()
+            self.start_date = datetime.datetime.now()
         else:
             self.start_date = start_date
         self.end_date = None
@@ -40,12 +40,10 @@ class Round:
                            > 0
                            for m in self.matchs)
         if not all_finished:
-            # print(f"Le round {self.rounds_id} n'est pas terminé")
             return
 
-        self.end_date = datetime.date.today()
-        print(f"🏁 Round terminé à {self.end_date}")
-        return 
+        self.end_date = datetime.datetime.now()
+        return
 
     def __str__(self):
         match_str = "\n".join(str(match) for match in self.matchs)

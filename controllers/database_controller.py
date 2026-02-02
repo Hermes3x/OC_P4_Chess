@@ -65,10 +65,9 @@ class DatabaseController:
             place=data['place'],
             date=data['date'],
             rounds_qty=data['round_qty'],
-            note=data['note']
+            note=data['note'],
+            end_date=data['end_date'],
         )
-
-        #  tournament.id = data['id']
 
         for player_id in data['players_ids']:
             if player_id in players_map:
@@ -78,7 +77,7 @@ class DatabaseController:
 
         self._load_rounds(tournament, data['rounds_list'], players_map)
 
-        print(f"✅ Tournoi '{tournament.name}' chargé avec succès !")
+        print(f"📂 Tournoi '{tournament.name}' chargé avec succès !")
         return tournament
 
     def _load_rounds(self, tournament, rounds_data, players_map):
