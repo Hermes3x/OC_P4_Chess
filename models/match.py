@@ -30,9 +30,6 @@ class Match:
             self.player1_score = 0.5
             self.player2_score = 0.5
 
-        self.players_pair[0].score += self.player1_score
-        self.players_pair[1].score += self.player2_score
-
         self.match = ([self.players_pair[0], self.player1_score],
                       [self.players_pair[1], self.player2_score])
         return f'Scores du match {self.player1_score} - {self.player2_score}'

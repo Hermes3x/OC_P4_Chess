@@ -1,125 +1,147 @@
 from controllers.database_controller import DatabaseController
+from controllers.reports_controller import ReportController
 from views.base_view import MainMenuView
 from views.tournament_view import TournamentView
+from views.report_view import ReportView
 from models.tournament import Tournament
-from models.player import Player
-from models.round import Round
-from models.match import Match
 import random
 import datetime
-
 
 class MainController:
     def __init__(self):
         self.menu_view = MainMenuView()
         self.tournament_view = TournamentView()
         self.db_controller = DatabaseController()
+        self.report_view = ReportView()
+
+    def choose_player(self):
+        file_choice = self.tournament_view.choose_players_json()
+        is_valid_file_choice = self.db_controller.set_players_file(file_choice)
+        if not is_valid_file_choice:
+            return
+
+        player_selection_choice = self.tournament_view.choose_player_search_method()
+
+        if player_selection_choice == "1":
+            selected_players_id = []
+            while True:
+                chosen_id = self.tournament_view.select_player_id()
+                if not chosen_id:
+                    break
+                
+                chosen_player = self.db_controller.find_player_by_id(chosen_id)
+                if chosen_player is None:
+                    print(f'Le joueur {chosen_player} est introuvable')
+                else: 
+                    selected_players_id.append(chosen_player)
+                    print(f"✅ {chosen_player.first_name} ajouté !")
+                    
+            return selected_players_id
+                # là idéalement il faudrait demander si l'utilisateur souhaite ajouter un autre joueur mais idéalement il faut faire une nouvelle méthode dans tournament view ? la barbe ?! ou alors sortir de la boucle et revenir au menu précédent. mais dans ce dernier cas ca ne sert a rien de faire une boucle while? ni une liste d'ailleurs.
+                # je ne sais pas comment arreter la boucle 
+
+
+
+    def play_round(self, tournament):
+        """Joue UN seul round (celui en cours)"""
+        if tournament.actual_round >= tournament.rounds_qty:
+            print("🏁 Le tournoi est déjà terminé !")
+            return
+
+        # 1. Création du round (les paires sont faites dans create_round)
+        new_round = tournament.create_round()
+        print(f"\n🔵 Lancement du Round {new_round.rounds_id}")
+
+        # 2. Déroulement des matchs
+        for match in new_round.matchs:
+            match.draw_color()
+            # SCORING ALEATOIRE (Pour test rapide) - À remplacer par manuel plus tard
+            p1, p2 = match.players_pair
+            winner = random.choice([p1, p2, None])
+            match.score(winner)
+
+        # 3. Fin du round
+        new_round.close_round()
+        tournament.update_players_scores_from_round(new_round) 
+        
+        # 4. Affichage et Sauvegarde
+        self.tournament_view.display_round_matchs(new_round)
+        self.db_controller.save_tournament_to_json(tournament)
+        print(f"✅ Round {new_round.rounds_id} terminé et sauvegardé.")
+
+    def run_tournament_menu(self, tournament):
+        """Sous-menu pour gérer un tournoi spécifique"""
+        while True:
+            print(f"\n--- ♟️ GESTION : {tournament.name} ---")
+            print(f"Round : {tournament.actual_round} / {tournament.rounds_qty}")
+            print("1. Jouer le prochain round")
+            print("2. Voir le classement provisoire")
+            print("3. Quitter et revenir au menu principal")
+            
+            choice = input("Votre choix : ")
+            
+            if choice == "1":
+                self.play_round(tournament)
+                
+                # Si c'était le dernier round, on affiche la fin
+                if tournament.actual_round == tournament.rounds_qty:
+                    tournament.end_date = str(datetime.date.today())
+                    self.db_controller.save_tournament_to_json(tournament)
+                    print("\n🏆 TOURNOI TERMINÉ ! 🏆")
+                    self.tournament_view.display_final_ranking(tournament)
+            
+            elif choice == "2":
+                self.tournament_view.display_final_ranking(tournament)
+
+            elif choice == "3":
+                break 
 
     def run(self):
         running = True
-
         while running:
             user_choice = self.menu_view.display_main_menu()
 
-            if user_choice == "1":
+            if user_choice == "1": # CRÉER TOURNOI
                 data = self.tournament_view.get_tournament_data()
                 tournament = Tournament(
                     name=data["name"],
                     place=data["place"],
                     date=data["date"],
                     rounds_qty=data["round_qty"],
-                    note=data["note"],
+                    note=data["note"]
                 )
-                print(f"Tournoi {tournament.name} créé avec succé")
                 self.db_controller.save_tournament_to_json(tournament)
 
-                get_tournament_players_from_json = (
-                    self.tournament_view.get_tournament_players_from_json())
-
-                if get_tournament_players_from_json == "Y":
-                    player_lists = self.db_controller.load_players_from_json()
-                    for player in player_lists:
-                        tournament.add_player(player)
+                choice = self.tournament_view.get_tournament_players_from_json()
+                if choice == "Y":
+                    players = self.db_controller.load_players_from_json()
+                    random.shuffle(players) # Mélange initial important
+                    for p in players:
+                        tournament.add_player(p)
                 else:
-                    new_players = []
-                    while True:
-                        user_response = (
-                            self.tournament_view.ask_add_player_manually())
-                        if user_response == "n":
-                            break
+                    while self.tournament_view.ask_add_player_manually() == "Y":
+                        new_player_data = self.tournament_view.get_new_player_info()
+                        from models.player import Player
+                        new_player_obj = Player(**new_player_data)
+                        tournament.add_player(new_player_obj)
+                    self.db_controller.update_global_players_to_json(tournament.tournament_players)
 
-                        player_data = (
-                            self.tournament_view.get_new_player_info())
-                        new_player = Player(
-                            first_name=player_data["first_name"],
-                            last_name=player_data["last_name"],
-                            birth_date=player_data["birth_date"],
-                            national_chess_id=player_data["national_chess_id"],
-                            score=0
-                            )
-                        tournament.add_player(new_player)
-                        new_players.append(new_player)
-                    self.db_controller.save_players_to_json(new_players)
-
-                print(f"\n🚀 Lancement du tournoi avec "
-                      f"{len(tournament.tournament_players)} joueurs")
                 self.db_controller.save_tournament_to_json(tournament)
+                print(f"\n🚀 Tournoi prêt avec {len(tournament.tournament_players)} joueurs.")
+                self.run_tournament_menu(tournament)
 
-                round1 = tournament.create_round()
-                print("\n📋 Lancement des matchs du Round 1 :")
-                for match in round1.matchs:
-                    p1, p2 = match.players_pair
-                    match.draw_color()
-                    match.score(random.choice([p1, p2, None]))
-                round1.close_round()
-                self.tournament_view.display_round_matchs(round1)
-                self.db_controller.save_tournament_to_json(tournament)
-
-                round2 = tournament.create_round()
-                print("\n📋 Lancement des matchs du Round 2 :")
-                for match in round2.matchs:
-                    p1, p2 = match.players_pair
-                    match.draw_color()
-                    match.score(random.choice([p1, p2, None]))
-                round2.close_round()
-                self.tournament_view.display_round_matchs(round2)
-                self.db_controller.save_tournament_to_json(tournament)
-
-                round3 = tournament.create_round()
-                print("\n📋 Lancement des matchs du Round 3 :")
-                for match in round3.matchs:
-                    p1, p2 = match.players_pair
-                    match.draw_color()
-                    match.score(random.choice([p1, p2, None]))
-                round3.close_round()
-                self.tournament_view.display_round_matchs(round3)
-                self.db_controller.save_tournament_to_json(tournament)
-
-                round4 = tournament.create_round()
-                print("\n📋 Lancement des matchs du Round 4 :")
-                for match in round4.matchs:
-                    p1, p2 = match.players_pair
-                    match.draw_color()
-                    match.score(random.choice([p1, p2, None]))
-                round4.close_round()
-                tournament.end_date = datetime.date.today()
-                self.tournament_view.display_round_matchs(round4)
-                self.tournament_view.display_final_ranking(tournament)
-                self.db_controller.save_tournament_to_json(tournament)
-
-            elif user_choice == "2":
-                print(">>> TODO: Lancer le chargement de tournoi")
+            elif user_choice == "2": # CHARGER TOURNOI
                 filename = self.tournament_view.choose_tournament_json()
-                full_path_filename = f"data/tournaments/{filename}.json"
-                tournament_to_load = self.db_controller.load_tournament(full_path_filename)
-                if tournament_to_load:
-                    print(f"✅ {tournament_to_load} !")
+                full_path = f"data/tournaments/{filename}.json"
+                tournament = self.db_controller.load_tournament(full_path)
+                
+                if tournament:
+                    print(f"✅ {tournament.name} chargé !")
+                    self.run_tournament_menu(tournament)
 
-            elif user_choice == "3":
-                print(">>> TODO: Afficher les rapports")  # choisir quel rapport
-            elif user_choice == "4":
-                print("Au revoir !")
+            elif user_choice == "3": # RAPPORTS
+                report_controller = ReportController(self.db_controller)
+                report_controller.run()
+
+            elif user_choice == "4": # QUITTER
                 running = False
-
-            else:
-                print("Choix invalide, veuillez réessayer.")
