@@ -13,7 +13,7 @@ class DatabaseController:
             json_players_filename += ".json"
 
         full_path_json_players_filename = os.path.join(
-            "data/player", json_players_filename)
+            "data/players", json_players_filename)
 
         if not os.path.exists(full_path_json_players_filename):
             print("❌ Fichier introuvable")
@@ -31,6 +31,29 @@ class DatabaseController:
                 return player
 
         return None
+
+    def find_player_by_name(self, target_name):
+        all_players = self.load_players_from_json()
+        found_players = []
+        for player in all_players:
+            full_name = f"{player.last_name} {player.first_name}".lower()
+            if target_name.lower() == full_name:
+                found_players.append(player)
+
+        return found_players
+    
+    def find_players_name_start_with(self, target_name_start):
+        all_players = self.load_players_from_json()
+        found_players = []
+
+        target = target_name_start.lower()
+        for player in all_players:
+            full_name = f"{player.last_name} {player.first_name}".lower()
+            if full_name.startswith(target):
+                found_players.append(player)
+                
+        return found_players
+    
 
     def save_players_to_json(self, players_list):
         # CORRECTION : On ne demande plus rien, on vérifie juste si c'est là.
