@@ -41,7 +41,7 @@ class DatabaseController:
                 found_players.append(player)
 
         return found_players
-    
+
     def find_players_name_start_with(self, target_name_start):
         all_players = self.load_players_from_json()
         found_players = []
@@ -51,12 +51,10 @@ class DatabaseController:
             full_name = f"{player.last_name} {player.first_name}".lower()
             if full_name.startswith(target):
                 found_players.append(player)
-                
+
         return found_players
-    
 
     def save_players_to_json(self, players_list):
-        # CORRECTION : On ne demande plus rien, on vérifie juste si c'est là.
         if not self.players_file:
             print("⚠️ Erreur : Aucun fichier de joueurs configuré.")
             return
@@ -73,7 +71,6 @@ class DatabaseController:
         print(f"💾 Sauvegarde réussie : {len(players_list)} joueurs.")
 
     def load_players_from_json(self):
-        # CORRECTION : Si pas de fichier, on renvoie vide, on ne demande pas.
         if not self.players_file or not os.path.exists(self.players_file):
             return []
 
@@ -92,9 +89,8 @@ class DatabaseController:
         return loaded_players
 
     def update_global_players_to_json(self, tournament_players):
-        # CORRECTION : Idem, on sécurise
         if not self.players_file:
-            return 
+            return
 
         existing_players = self.load_players_from_json()
         existing_ids = [player.national_chess_id for player in existing_players]
@@ -151,7 +147,7 @@ class DatabaseController:
         print(f"📂 Tournoi '{tournament.name}' chargé avec succès !")
         return tournament
 
-    def load_tournaments(self):
+    def load_all_tournaments(self):
         tournaments = []
         directory = "data/tournaments"
 

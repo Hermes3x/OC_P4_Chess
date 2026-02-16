@@ -26,7 +26,8 @@ class TournamentView:
         print("1. Par ID exact (ex: AB12345)")
         print("2. Par nom complet (ex: Dupont Florent)")
         print("3. Par début de nom (ex: DU)")
-        print("4. Annuler")
+        print("4. Ajouter un nouveau joueur")
+        print("5. Annuler")
         print("-"*40)
         choice = input("Votre choix (1-4) : ").strip()
         return choice
@@ -47,7 +48,7 @@ class TournamentView:
         print("Renseignez le début de nom (ex: DU)")
         return input("Le nom commence par :")
 
-    def display_players_name_start_list(self, players_name_start_list):
+    def display_players_list_selection(self, players_name_start_list):
         print(f"🔎 {len(players_name_start_list)} joueurs trouvés :")
         for i, player in enumerate(players_name_start_list, start=1):
             print(f"{i} - {player.first_name} {player.last_name}")
@@ -59,12 +60,16 @@ class TournamentView:
                 print("❌ Numéro invalide, réessayez.")
             except ValueError:
                 print("❌ Vous devez entrer un chiffre.")
-        
+
     def display_player_name_not_found(self, invalid_name):
         print(f"❌ Le joueur {invalid_name} est introuvable.")
 
     def display_player_added(self, player):
         print(f"✅ {player.first_name} {player.last_name} a été ajouté au tournoi.")
+
+    def display_player_ever_added(self, invalid_player):
+        print(f"Le joueur {invalid_player.first_name} {invalid_player.last_name} {invalid_player.national_chess_id} "
+              f"est déjà inscrit au tournoi")
 
     def ask_add_player_manually(self):
         add_player = input("Souhaitez vous ajouter un joueur manuellement ? Y/n")
@@ -79,8 +84,8 @@ class TournamentView:
         chess_id = input("ID Chess (AB12345) : ")
         return {
             "first_name": first_name,
-            "last_name": last_name, 
-            "birth_date": birth_date, 
+            "last_name": last_name,
+            "birth_date": birth_date,
             "national_chess_id": chess_id
             }
 
@@ -88,11 +93,24 @@ class TournamentView:
         json_name = input("📂 Veuillez saisir le nom du fichier à charger : ")
         return json_name
 
+    def display_tournament_creation(self, tournament):
+        print(f"\n🚀 Tournoi {tournament.name} est créé avec "
+              f"{len(tournament.tournament_players)} joueurs.")
+
+    def display_tournament_loaded(self, tournament):
+        print(f"✅ {tournament.name} chargé !")
+
     def display_round_matchs(self, round_obj):
         print(f"\n--- Matchs du round {round_obj.rounds_id} ---")
         for match in round_obj.matchs:
             print(f"{match}")
         print("-----------------------------------")
+
+    def display_round_start(self, new_round):
+        print(f"\n🔵 Lancement du Round {new_round.rounds_id}")
+
+    def display_round_matchs_saving(self, new_round):
+        print(f"✅ Round {new_round.rounds_id} terminé et sauvegardé.")
 
     def display_final_ranking(self, tournament_obj):
         print("\n--- 🏆 Classement final 🏆 ---")
@@ -103,3 +121,6 @@ class TournamentView:
             print(f"{i}. {player.first_name} {player.last_name} "
                   f"{tournament_obj.players_scores[player.national_chess_id]}"
                   f"pts")
+    
+    def display_tournament_end(self, tournament):
+        print(f"\n🏆 LE TOURNOI {tournament.name} TERMINÉ ! 🏆")

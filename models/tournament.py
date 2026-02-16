@@ -1,5 +1,4 @@
 from models.round import Round
-from models.player import Player
 import random
 
 
@@ -47,7 +46,7 @@ class Tournament:
         self.rounds_list.append(current_round)
 
         return current_round
-    
+
     def update_players_scores_from_round(self, round_obj):
         for match in round_obj.matchs:
             p1, p2 = match.players_pair

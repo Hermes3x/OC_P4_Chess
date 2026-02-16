@@ -9,6 +9,13 @@ class ReportView:
         print("6 - Retour menu principal")  # Toujours utile !
 
         return input("Veuillez choisir le rapport à éditer : ")
+    
+    def display_tournament_players(self, tournament, sorted_tournament_players):
+        print(f"\n--- LISTE DES JOUEURS (Tri Alphabétique) DU TOURNOI : ---"
+              f"\n--- {tournament.name} {tournament.date} {tournament.place}")
+
+        for player in sorted_tournament_players:
+            print(f"- {player.last_name} {player.first_name} {player.national_chess_id}")
 
     def display_players_sorted_list(self, players_sorted_list):
         print("\n--- LISTE DES JOUEURS (Tri Alphabétique) ---")
@@ -25,7 +32,7 @@ class ReportView:
             print("Aucun tournoi trouvé")
         else:
             for tournament in tournaments_list:
-                print(f"🏆 {tournament.name} - Lieu : {tournament.place}")
+                print(f"🏆 {tournament.date} - {tournament.name} - Lieu : {tournament.place}")
                 print(f"   📅 Début : {tournament.date} | Fin : {tournament.end_date}")
                 print("-----------------------------------")
 

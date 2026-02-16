@@ -8,4 +8,4 @@ class MainMenuView:
         print("-----------------------------------")
 
         choice = input("Votre Choix")
-        return choice 
+        return choice
