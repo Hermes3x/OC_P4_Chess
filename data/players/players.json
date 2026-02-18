@@ -244,5 +244,11 @@
         "last_name": "FLUROT",
         "birth_date": "14/09/1926",
         "national_chess_id": "RT25669"
+    },
+    {
+        "first_name": "Jean",
+        "last_name": "Maurice",
+        "birth_date": "27/08/1935",
+        "national_chess_id": "FT25874"
     }
 ]

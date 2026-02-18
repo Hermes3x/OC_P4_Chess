@@ -7,6 +7,19 @@ import os
 class DatabaseController:
     def __init__(self):
         self.players_file = None
+        self.players_cache = []
+
+    def get_available_players_files(self):
+        directory = "data/players"
+        if not os.path.exists(directory):
+            return []
+        return [f for f in os.listdir(directory) if f.endswith(".json")]
+    
+    def get_available_tournaments_files(self):
+        directory = "data/tournaments"
+        if not os.path.exists(directory):
+            return []
+        return [f for f in os.listdir(directory) if f.endswith(".json")]
 
     def set_players_file(self, json_players_filename):
         if not json_players_filename.endswith(".json"):
@@ -16,38 +29,36 @@ class DatabaseController:
             "data/players", json_players_filename)
 
         if not os.path.exists(full_path_json_players_filename):
-            print("❌ Fichier introuvable")
+            print("erreur")
             return False
 
         self.players_file = full_path_json_players_filename
+        self.players_cache = self.load_players_from_json()
         return True
 
     def find_player_by_id(self, target_id):
-        # On utilise load_players pour avoir des objets
-        all_players = self.load_players_from_json()
-
-        for player in all_players:
+        # On cherche directement dans le cache mémoire
+        for player in self.players_cache:
             if player.national_chess_id == target_id:
                 return player
 
         return None
 
     def find_player_by_name(self, target_name):
-        all_players = self.load_players_from_json()
         found_players = []
-        for player in all_players:
+        target = target_name.lower()
+        for player in self.players_cache:
             full_name = f"{player.last_name} {player.first_name}".lower()
-            if target_name.lower() == full_name:
+            if target == full_name:
                 found_players.append(player)
 
         return found_players
 
     def find_players_name_start_with(self, target_name_start):
-        all_players = self.load_players_from_json()
         found_players = []
 
         target = target_name_start.lower()
-        for player in all_players:
+        for player in self.players_cache:
             full_name = f"{player.last_name} {player.first_name}".lower()
             if full_name.startswith(target):
                 found_players.append(player)
@@ -92,17 +103,16 @@ class DatabaseController:
         if not self.players_file:
             return
 
-        existing_players = self.load_players_from_json()
-        existing_ids = [player.national_chess_id for player in existing_players]
-
+        existing_ids = [player.national_chess_id for player in self.players_cache]
         updated = False
+
         for player in tournament_players:
             if player.national_chess_id not in existing_ids:
-                existing_players.append(player)
+                self.players_cache.append(player)
                 updated = True
 
         if updated:
-            self.save_players_to_json(existing_players)
+            self.save_players_to_json(self.players_cache)
 
     def save_tournament_to_json(self, tournament):
         clean_name = tournament.name.replace(" ", "_").lower()
@@ -124,8 +134,10 @@ class DatabaseController:
         with open(filename, 'r') as file:
             data = json.load(file)
 
-        all_players = self.load_players_from_json()
-        players_map = {p.national_chess_id: p for p in all_players}
+        if not self.players_cache:
+            self.players_cache = self.load_players_from_json()
+
+        players_map = {p.national_chess_id: p for p in self.players_cache}
 
         tournament = Tournament(
             name=data['name'],

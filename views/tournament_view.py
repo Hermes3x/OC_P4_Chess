@@ -13,6 +13,33 @@ class TournamentView:
                 "round_qty": rounds,
                 "note": note,
                 }
+    
+    def display_error(self, message):
+        print(f"❌ ERREUR : {message}")
+
+    def display_nb_added_players(self, message):
+        print(f"📊 {message}")
+
+    def display_file_selection_menu(self, file_list, prompt_message="Choisissez un fichier :"):
+        print(prompt_message)
+        for i, filename in enumerate(file_list, start=1):
+            print(f"{i} - {filename}")
+
+        print("0 - Annuler")
+
+        while True:
+            user_input = input("Votre choix (numéro) : ").strip()
+            
+            if user_input == "0" or not user_input:
+                return None
+            
+            try:
+                choice = int(user_input)
+                if 1 <= choice <= len(file_list):
+                    return file_list[choice - 1]
+                print("❌ Numéro invalide.")
+            except ValueError:
+                print("❌ Veuillez entrer un chiffre.")
 
     def choose_players_json(self):
         json_name = input("📂 Veuillez saisir le nom du fichier à charger pour sélectionner les joueurs : ")
@@ -34,8 +61,9 @@ class TournamentView:
 
     def select_player_id(self):
         print("Renseignez l'ID du joueur à ajouter au tournoi")
-        return input("ID du joueur (ex: AB12345) : ")
-
+        return input("ID du joueur (ex: AB12345) : "
+                     "\nPour terminer laissez vide et appuyez sur Entrée")
+        
     def display_player_id_not_found(self, invalid_id):
         print(f"❌ Le joueur d'ID '{invalid_id}' est introuvable.")
 
@@ -46,7 +74,8 @@ class TournamentView:
 
     def select_players_starting_with(self):
         print("Renseignez le début de nom (ex: DU)")
-        return input("Le nom commence par :")
+        return input("Le nom commence par :"
+                     "\nPour terminer laissez vide et appuyez sur Entrée")
 
     def display_players_list_selection(self, players_name_start_list):
         print(f"🔎 {len(players_name_start_list)} joueurs trouvés :")
