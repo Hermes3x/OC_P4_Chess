@@ -23,14 +23,14 @@ class MainController:
         if not available_files:
             self.tournament_view.display_error("Aucun fichier de joueurs trouvé !")
             return [] # Retourne liste vide
-        
+
         # 2. On affiche le menu de sélection (via TournamentView)
         chosen_filename = self.tournament_view.display_file_selection_menu(
             available_files, "📂 Veuillez choisir le fichier de joueurs à charger :")
-        
+
         if not chosen_filename:
             return [] # Annulation
-        
+
         self.db_controller.set_players_file(chosen_filename)
 
         forbidden_players_ids_to_add = {p.id for p in tournament.tournament_players}
@@ -41,12 +41,12 @@ class MainController:
             current_count = len(tournament.tournament_players) + len(final_selection)
             player_selection_choice = (
                 self.tournament_view.choose_player_search_method())
-            
+
             if player_selection_choice in ["1", "2", "3", "4"]:
                 if current_count >= max_players:
                     self.tournament_view.display_error(f"Limite atteinte ! ({current_count}/{max_players} joueurs). ")
                     continue
-            
+
             # --- OPTION 5 : TERMINER ---
             if player_selection_choice == "5":
                 break
@@ -55,9 +55,9 @@ class MainController:
             if player_selection_choice == "1":
                 # input retournée par utilisateur
                 while True:
-                    current_total = len(tournament.tournament_players) + len(final_selection)
-                    if current_total >= max_players:
-                        self.tournament_view.display_error(f"Limite atteinte ! ({current_total}/{max_players}).")
+                    current_count = len(tournament.tournament_players) + len(final_selection)
+                    if current_count >= max_players:
+                        self.tournament_view.display_error(f"Limite atteinte ! ({current_count}/{max_players}).")
                         break
 
                     chosen_id = self.tournament_view.select_player_id()
@@ -75,15 +75,16 @@ class MainController:
                     else:
                         final_selection.append(chosen_player)
                         forbidden_players_ids_to_add.add(chosen_player.national_chess_id)
+                        current_count = len(tournament.tournament_players) + len(final_selection)
                         self.tournament_view.display_player_added(chosen_player)
                         self.tournament_view.display_nb_added_players(f"({current_count}/{max_players} joueurs ajoutés). ")
 
             # --- OPTION 2 : PAR NOM ---
             elif player_selection_choice == "2":
                 while True:
-                    current_total = len(tournament.tournament_players) + len(final_selection)
-                    if current_total >= max_players:
-                        self.tournament_view.display_error(f"Limite atteinte ! ({current_total}/{max_players}).")
+                    current_count = len(tournament.tournament_players) + len(final_selection)
+                    if current_count >= max_players:
+                        self.tournament_view.display_error(f"Limite atteinte ! ({current_count}/{max_players}).")
                         break
                     name_input = self.tournament_view.select_player_name()
                     if not name_input:
@@ -107,14 +108,15 @@ class MainController:
                             final_selection.append(chosen_player)
                             forbidden_players_ids_to_add.add(chosen_player.national_chess_id)
                             self.tournament_view.display_player_added(chosen_player)
+                            current_count = len(tournament.tournament_players) + len(final_selection)
                             self.tournament_view.display_nb_added_players(f"({current_count}/{max_players} joueurs ajoutés). ")
 
             # --- OPTION 3 : DEBUT DE NOM ---
             elif player_selection_choice == "3":
                 while True:
-                    current_total = len(tournament.tournament_players) + len(final_selection)
-                    if current_total >= max_players:
-                        self.tournament_view.display_error(f"Limite atteinte ! ({current_total}/{max_players}).")
+                    current_count = len(tournament.tournament_players) + len(final_selection)
+                    if current_count >= max_players:
+                        self.tournament_view.display_error(f"Limite atteinte ! ({current_count}/{max_players}).")
                         break
                     name_start_input = self.tournament_view.select_players_starting_with()
                     if not name_start_input:
@@ -135,6 +137,7 @@ class MainController:
                             final_selection.append(chosen_player)
                             forbidden_players_ids_to_add.add(chosen_player.national_chess_id)
                             self.tournament_view.display_player_added(chosen_player)
+                            current_count = len(tournament.tournament_players) + len(final_selection)
                             self.tournament_view.display_nb_added_players(f"({current_count}/{max_players} joueurs ajoutés). ")
 
                         else:
@@ -144,9 +147,9 @@ class MainController:
             # --- OPTION 4 : AJOUT MANUEL D'UN NOUVEAU JOUEUR ---
             elif player_selection_choice == "4":
                 while True:
-                    current_total = len(tournament.tournament_players) + len(final_selection)
-                    if current_total >= max_players:
-                        self.tournament_view.display_error(f"Limite atteinte ! ({current_total}/{max_players}).")
+                    current_count = len(tournament.tournament_players) + len(final_selection)
+                    if current_count >= max_players:
+                        self.tournament_view.display_error(f"Limite atteinte ! ({current_count}/{max_players}).")
                         break
                     new_player_data = self.tournament_view.get_new_player_info()
 
@@ -162,6 +165,7 @@ class MainController:
                         final_selection.append(new_player_obj)
                         forbidden_players_ids_to_add.add(new_player_obj.national_chess_id)
                         self.tournament_view.display_player_added(new_player_obj)
+                        current_count = len(tournament.tournament_players) + len(final_selection)
                         self.tournament_view.display_nb_added_players(f"({current_count}/{max_players} joueurs ajoutés). ")
 
                         if self.tournament_view.ask_add_player_manually().lower() != "Y":
