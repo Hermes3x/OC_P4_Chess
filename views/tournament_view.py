@@ -41,9 +41,9 @@ class TournamentView:
             except ValueError:
                 print("❌ Veuillez entrer un chiffre.")
 
-    def choose_players_json(self):
-        json_name = input("📂 Veuillez saisir le nom du fichier à charger pour sélectionner les joueurs : ")
-        return json_name
+    # def choose_players_json(self):
+    #     json_name = input("📂 Veuillez saisir le nom du fichier à charger pour sélectionner les joueurs : ")
+    #     return json_name
 
     def choose_player_search_method(self):
         """Demande à l'utilisateur comment il veut chercher un joueur."""
@@ -97,7 +97,7 @@ class TournamentView:
         print(f"✅ {player.first_name} {player.last_name} a été ajouté au tournoi.")
 
     def display_player_ever_added(self, invalid_player):
-        print(f"Le joueur {invalid_player.first_name} {invalid_player.last_name} {invalid_player.national_chess_id} "
+        print(f"❌ Le joueur {invalid_player.first_name} {invalid_player.last_name} {invalid_player.national_chess_id} "
               f"est déjà inscrit au tournoi")
 
     def ask_add_player_manually(self):
