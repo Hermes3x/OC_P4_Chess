@@ -1,5 +1,6 @@
 import datetime
 
+
 class TournamentView:
     """Gère l'interface utilisateur console pour la gestion des tournois."""
 
@@ -55,10 +56,10 @@ class TournamentView:
 
         while True:
             user_input = input("Votre choix (numéro) : ").strip()
-            
+
             if user_input == "0" or not user_input:
                 return None
-            
+
             try:
                 choice = int(user_input)
                 if 1 <= choice <= len(file_list):
@@ -85,7 +86,7 @@ class TournamentView:
         print("Renseignez l'ID du joueur à ajouter au tournoi")
         return input("ID du joueur (ex: AB12345) : "
                      "\nPour terminer laissez vide et appuyez sur Entrée")
-        
+
     def display_player_id_not_found(self, invalid_id):
         """Signale qu'aucun joueur ne possède cet ID dans la base."""
         print(f"❌ L'ID '{invalid_id}' n'existe pas dans la base de données.")
