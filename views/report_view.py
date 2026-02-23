@@ -26,8 +26,9 @@ class ReportView:
             for match in round_obj.matchs:
                 p1, p2 = match.players_pair
                 s1, s2 = match.player1_score, match.player2_score
-                print(f"   🔸 {p1.last_name} {p1.national_chess_id} ({s1}) vs {p2.last_name} {p2.national_chess_id} ({s2})")
-            
+                print(f"   🔸 {p1.last_name} {p1.national_chess_id} ({s1}) vs "
+                      f"{p2.last_name} {p2.national_chess_id} ({s2})")
+
         print("\n-------------------------------------------")
         input("Appuyez sur Entrée pour revenir au menu...")
 
@@ -43,7 +44,7 @@ class ReportView:
 
             if user_input == "0":
                 return None
-            
+
             try:
                 choice = int(user_input)
                 if 1 <= choice <= len(file_list):

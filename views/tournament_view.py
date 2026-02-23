@@ -81,6 +81,25 @@ class TournamentView:
         print("-"*40)
         return input("Votre choix (1-4) : ").strip()
 
+    def get_match_score(self, match):
+        """Demande les résultats du match à l'utilisateur via les index du tuple."""
+        p1 = match.players_pair[0]
+        p2 = match.players_pair[1]
+
+        print(f"\nSaisie du score : {p1.last_name} vs {p2.last_name}")
+        print("1 : Victoire J1 | 2 : Victoire J2 | 0 : Match nul")
+
+        while True:
+            choice = input("Résultat (1, 2 ou 0) : ").strip()
+            if choice == "1":
+                return p1, 1.0  # On retourne le joueur gagnant pour la méthode match.score()
+            elif choice == "2":
+                return p2, 0.0  # On retourne le joueur gagnant
+            elif choice == "0":
+                return None, 0.5 # None signifie match nul pour ta méthode match.score()
+            else:
+                print("❌ Choix invalide.")
+
     def select_player_id(self):
         """Invite à saisir un identifiant national d'échecs."""
         print("Renseignez l'ID du joueur à ajouter au tournoi")

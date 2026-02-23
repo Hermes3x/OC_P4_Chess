@@ -14,7 +14,7 @@ class DatabaseController:
         if not os.path.exists(directory):
             return []
         return [f for f in os.listdir(directory) if f.endswith(".json")]
-    
+
     def get_available_tournaments_files(self):
         directory = "data/tournaments"
         if not os.path.exists(directory):
@@ -119,11 +119,11 @@ class DatabaseController:
             os.makedirs(os.path.dirname(filename), exist_ok=True)
             with open(filename, 'w', encoding="utf-8") as file:
                 json.dump(data, file, indent=4)
-            
+
             return True  # <--- INDISPENSABLE pour que le MainController sache que ça a marché
         except Exception as e:
             print(f"Erreur lors de l'écriture : {e}")
-            return False # <--- Indique l'échec au contrôleur
+            return False  # <--- Indique l'échec au contrôleur
 
     def load_tournament(self, filename):
         if not os.path.exists(filename):
@@ -133,15 +133,15 @@ class DatabaseController:
             data = json.load(f)
 
         tournament = Tournament(
-            data['name'], data['place'], data['date'], 
+            data['name'], data['place'], data['date'],
             data['round_qty'], data['note'], data.get('end_date')
         )
         tournament.actual_round = data.get('actual_round', 0)
-        
+
         players_map = {p.national_chess_id: p for p in self.players_cache}
-        
+
         # On crée une liste vide directement DANS l'objet tournoi
-        tournament.missing_players = [] 
+        tournament.missing_players = []
 
         for player_id in data['players_ids']:
             if player_id in players_map:
@@ -152,7 +152,7 @@ class DatabaseController:
 
         self._load_rounds(tournament, data['rounds_list'], players_map)
 
-        return tournament # ON NE RENVOIE PLUS DE TUPLE, JUSTE L'OBJET
+        return tournament  # ON NE RENVOIE PLUS DE TUPLE, JUSTE L'OBJET
 
     def load_all_tournaments(self):
         tournaments = []

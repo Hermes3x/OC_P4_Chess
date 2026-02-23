@@ -118,9 +118,7 @@ class MainController:
         # 2. Déroulement des matchs
         for match in new_round.matchs:
             match.draw_color()
-            # SCORING ALEATOIRE (Pour test rapide) - À remplacer par manuel plus tard
-            p1, p2 = match.players_pair
-            winner = random.choice([p1, p2, None])
+            winner, _ = self.tournament_view.get_match_score(match)
             match.score(winner)
 
         # 3. Fin du round
