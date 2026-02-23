@@ -310,5 +310,23 @@
         "last_name": "Rabi",
         "birth_date": "25/09/1975",
         "national_chess_id": "TR23123"
+    },
+    {
+        "first_name": "Maurice",
+        "last_name": "Johnson",
+        "birth_date": "24/09/2001",
+        "national_chess_id": "RT55698"
+    },
+    {
+        "first_name": "Raymond",
+        "last_name": "Edvige",
+        "birth_date": "07/12/1974",
+        "national_chess_id": "TY22255"
+    },
+    {
+        "first_name": "Thierry",
+        "last_name": "Lurcon",
+        "birth_date": "29/07/2000",
+        "national_chess_id": "TT22236"
     }
 ]

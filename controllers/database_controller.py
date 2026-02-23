@@ -29,7 +29,6 @@ class DatabaseController:
             "data/players", json_players_filename)
 
         if not os.path.exists(full_path_json_players_filename):
-            print("erreur")
             return False
 
         self.players_file = full_path_json_players_filename
@@ -67,8 +66,7 @@ class DatabaseController:
 
     def save_players_to_json(self, players_list):
         if not self.players_file:
-            print("⚠️ Erreur : Aucun fichier de joueurs configuré.")
-            return
+            return False
 
         serialized_players = []
         for player in players_list:
@@ -78,8 +76,6 @@ class DatabaseController:
 
         with open(self.players_file, 'w') as file:
             json.dump(serialized_players, file, indent=4)
-
-        print(f"💾 Sauvegarde réussie : {len(players_list)} joueurs.")
 
     def load_players_from_json(self):
         if not self.players_file or not os.path.exists(self.players_file):
@@ -96,7 +92,6 @@ class DatabaseController:
             player_obj = Player.from_dict(data)
             loaded_players.append(player_obj)
 
-        print(f"📂 Chargement réussi : {len(loaded_players)} joueurs récupérés.")
         return loaded_players
 
     def update_global_players_to_json(self, tournament_players):
@@ -115,49 +110,49 @@ class DatabaseController:
             self.save_players_to_json(self.players_cache)
 
     def save_tournament_to_json(self, tournament):
-        clean_name = tournament.name.replace(" ", "_").lower()
-        filename = f"data/tournaments/{clean_name}.json"
+        try:
+            clean_name = tournament.name.replace(" ", "_").lower()
+            filename = f"data/tournaments/{clean_name}.json"
 
-        data = tournament.to_dict()
+            data = tournament.to_dict()
 
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        with open(filename, 'w') as file:
-            json.dump(data, file, indent=4)
-
-        print(f"💾 Tournoi sauvegardé : {filename}")
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            with open(filename, 'w', encoding="utf-8") as file:
+                json.dump(data, file, indent=4)
+            
+            return True  # <--- INDISPENSABLE pour que le MainController sache que ça a marché
+        except Exception as e:
+            print(f"Erreur lors de l'écriture : {e}")
+            return False # <--- Indique l'échec au contrôleur
 
     def load_tournament(self, filename):
         if not os.path.exists(filename):
-            print(f"❌ Fichier introuvable : {filename}")
             return None
 
-        with open(filename, 'r') as file:
-            data = json.load(file)
-
-        if not self.players_cache:
-            self.players_cache = self.load_players_from_json()
-
-        players_map = {p.national_chess_id: p for p in self.players_cache}
+        with open(filename, 'r', encoding='utf-8') as f:
+            data = json.load(f)
 
         tournament = Tournament(
-            name=data['name'],
-            place=data['place'],
-            date=data['date'],
-            rounds_qty=data['round_qty'],
-            note=data['note'],
-            end_date=data['end_date'],
+            data['name'], data['place'], data['date'], 
+            data['round_qty'], data['note'], data.get('end_date')
         )
+        tournament.actual_round = data.get('actual_round', 0)
+        
+        players_map = {p.national_chess_id: p for p in self.players_cache}
+        
+        # On crée une liste vide directement DANS l'objet tournoi
+        tournament.missing_players = [] 
 
         for player_id in data['players_ids']:
             if player_id in players_map:
                 tournament.add_player(players_map[player_id])
             else:
-                print(f"⚠️ Joueur {player_id} introuvable dans la base globale !")
+                # On stocke dans l'objet tournoi au lieu de faire un print
+                tournament.missing_players.append(player_id)
 
         self._load_rounds(tournament, data['rounds_list'], players_map)
 
-        print(f"📂 Tournoi '{tournament.name}' chargé avec succès !")
-        return tournament
+        return tournament # ON NE RENVOIE PLUS DE TUPLE, JUSTE L'OBJET
 
     def load_all_tournaments(self):
         tournaments = []

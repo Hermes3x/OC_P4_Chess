@@ -38,7 +38,7 @@ class MainController:
         while len(tournament.tournament_players) < max_players:
             choice = self.tournament_view.choose_player_search_method()
 
-            if choice == "5": # Annuler / Terminer
+            if choice == "5":  # Annuler / Terminer
                 break
 
             chosen_player = None
@@ -79,7 +79,10 @@ class MainController:
                 if new_data:
                     # On crée l'objet Player dynamiquement
                     chosen_player = Player(**new_data)
-                    self.db_controller.update_global_players_to_json([chosen_player])
+                    if not self.db_controller.update_global_players_to_json([chosen_player]):
+                        self.tournament_view.display_error("Fichier player introuvable")
+                    else:
+                        self.tournament_view.display_events(f"💾 Sauvegarde réussie")
 
             # --- LOGIQUE D'AJOUT COMMUNE ---
             if chosen_player:
@@ -89,13 +92,16 @@ class MainController:
                     tournament.add_player(chosen_player)
                     forbidden_ids.add(chosen_player.national_chess_id)
                     self.tournament_view.display_player_added(chosen_player)
-                    
+
                     # Mise à jour de la vue sur le compte actuel
                     count = len(tournament.tournament_players)
                     self.tournament_view.display_nb_added_players(f"({count}/{max_players} joueurs).")
-                    
+
                     # Sauvegarde en temps réel
-                    self.db_controller.save_tournament_to_json(tournament)
+                    if self.db_controller.save_tournament_to_json(tournament):
+                        self.tournament_view.display_events(f"💾 Tournoi sauvegardé : {tournament.name}")
+                    else:
+                        self.tournament_view.display_error("Erreur lors de la sauvegarde du tournoi.")
 
         return
 
@@ -123,7 +129,10 @@ class MainController:
 
         # 4. Affichage et Sauvegarde
         self.tournament_view.display_round_matchs(new_round)
-        self.db_controller.save_tournament_to_json(tournament)
+        if self.db_controller.save_tournament_to_json(tournament):
+            self.tournament_view.display_events(f"💾 Tournoi sauvegardé : {tournament.name}")
+        else:
+            self.tournament_view.display_error("Erreur lors de la sauvegarde du round.")
         self.tournament_view.display_round_matchs_saving(new_round)
 
     def run_tournament_menu(self, tournament):
@@ -132,33 +141,33 @@ class MainController:
             current_count = len(tournament.tournament_players)
             max_players = tournament.rounds_qty * 2
 
-            print(f"\n--- ♟️ GESTION : {tournament.name} ---")
-            print(f"Nombre de joueurs inscrits : {current_count} / {max_players}")
+            self.tournament_view.display_tournament_menu(f"\n--- ♟️ GESTION : {tournament.name} ---")
+            self.tournament_view.display_tournament_menu(f"Nombre de joueurs inscrits : {current_count} / {max_players}")
 
             # ÉTAPE 1 : Vérification du remplissage
             if current_count < max_players:
                 if current_count == 0:
-                    print("📝 Nouveau tournoi détecté. Veuillez enregistrer les joueurs.")
+                    self.tournament_view.display_tournament_menu("📝 Nouveau tournoi détecté. Veuillez enregistrer les joueurs.")
                 else:
-                    print(f"ℹ️ Inscription en cours... ({current_count}/{max_players})")
-                
+                    self.tournament_view.display_tournament_menu(f"ℹ️ Inscription en cours... ({current_count}/{max_players})")
+
                 # On lance l'ajout de joueurs
                 self.choose_player(tournament)
 
                 # Vérification après l'ajout
                 if len(tournament.tournament_players) < max_players:
-                    print("\n⚠️ Inscription mise en pause. Retour au menu principal...")
-                    break 
+                    self.tournament_view.display_tournament_menu("\n⚠️ Inscription mise en pause. Retour au menu principal...")
+                    break
 
                 continue  # Relance la boucle pour passer à l'étape 2 (le menu de jeu)
 
             # ÉTAPE 2 : Menu de gestion une fois complet
             else:
                 # On ne nettoie l'écran ou on n'affiche le menu que si c'est prêt
-                print(f"✅ Tournoi prêt ! Round : {tournament.actual_round} / {tournament.rounds_qty}")
-                print("1. Jouer le prochain round")
-                print("2. Voir le classement provisoire")
-                print("3. Quitter et revenir au menu principal")
+                self.tournament_view.display_tournament_menu(f"✅ Tournoi prêt ! Round : {tournament.actual_round} / {tournament.rounds_qty}")
+                self.tournament_view.display_tournament_menu("1. Jouer le prochain round")
+                self.tournament_view.display_tournament_menu("2. Voir le classement provisoire")
+                self.tournament_view.display_tournament_menu("3. Quitter et revenir au menu principal")
 
                 choice = input("Votre choix : ")
 
@@ -168,7 +177,10 @@ class MainController:
                     # Si c'était le dernier round, on finalise
                     if tournament.actual_round == tournament.rounds_qty:
                         tournament.end_date = str(datetime.date.today())
-                        self.db_controller.save_tournament_to_json(tournament)
+                        if self.db_controller.save_tournament_to_json(tournament) is True:
+                            self.tournament_view.display_events(f"💾 Tournoi sauvegardé : {tournament}")
+                        else:
+                            self.tournament_view.display_error("Error")
                         self.tournament_view.display_tournament_end(tournament)
                         self.tournament_view.display_final_ranking(tournament)
 
@@ -203,11 +215,16 @@ class MainController:
 
                     players_filename = self.tournament_view.display_file_selection_menu(
                         available_players, "📂 Pour charger le tournoi, veuillez d'abord sélectionner le fichier de joueurs de référence :")
-                    
+
                     if not players_filename:
                         continue
 
-                    self.db_controller.set_players_file(players_filename)
+                    if self.db_controller.set_players_file(players_filename) is False:
+                        self.tournament_view.display_error(f"Impossible d'ouvrir le fichier {players_filename}")
+
+                    self.db_controller.load_players_from_json()
+                    if self.db_controller.load_players_from_json() is True:
+                        self.tournament_view.display_events(f"📂 Chargement réussi : {len(available_players)} joueurs récupérés.")
 
                 available_tournaments = self.db_controller.get_available_tournaments_files()
 
@@ -225,8 +242,20 @@ class MainController:
                 tournament = self.db_controller.load_tournament(full_path)
 
                 if tournament:
+                    self.tournament_view.display_events(f"📂 Tournoi '{tournament.name}' chargé avec succès !")
+
+                if tournament:
                     self.tournament_view.display_tournament_loaded(tournament)
+
+                    # On regarde si l'attribut qu'on a créé existe et s'il est rempli
+                    if hasattr(tournament, 'missing_players') and tournament.missing_players:
+                        for p_id in tournament.missing_players:
+                            self.tournament_view.display_error(f"Le joueur avec l'ID {p_id} est introuvable dans la base globale.")
+
                     self.run_tournament_menu(tournament)
+
+                else:
+                    self.tournament_view.display_error(f"❌ Fichier introuvable : {tournament}")
 
             elif user_choice == "3":  # RAPPORTS
                 report_controller = ReportController(self.db_controller)
