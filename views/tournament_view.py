@@ -96,7 +96,7 @@ class TournamentView:
             elif choice == "2":
                 return p2, 0.0  # On retourne le joueur gagnant
             elif choice == "0":
-                return None, 0.5 # None signifie match nul pour ta méthode match.score()
+                return None, 0.5  # None signifie match nul pour ta méthode match.score()
             else:
                 print("❌ Choix invalide.")
 
