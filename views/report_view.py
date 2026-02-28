@@ -5,7 +5,7 @@ class ReportView:
         2: "Erreur : Le fichier est corrompu ou introuvable.",
         3: "Numéro invalide.",
         4: "Entrée invalide : veuillez saisir un chiffre.",
-        5: "Choix invalide, veuillez réessayer." # Pour le menu principal des rapports
+        5: "Choix invalide, veuillez réessayer.",
     }
 
     FILE_MENU_PROMPTS = {
@@ -17,8 +17,6 @@ class ReportView:
         """Affiche une erreur spécifique aux rapports."""
         message = self.ERROR_MESSAGES.get(code, "Erreur inconnue")
         print(f"\n--- ❌ ERREUR : {message} ---")
-
-    
 
     def display_rapport_choice(self):
         print("\n--- 📊 MENU RAPPORTS 📊 ---")
@@ -57,7 +55,7 @@ class ReportView:
         """Affiche une liste de fichiers pour la génération de rapports."""
         prompt_message = self.FILE_MENU_PROMPTS.get(prompt_code, "Choisissez un fichier :")
         print(f"\n{prompt_message}")
-        
+
         for i, filename in enumerate(file_list, start=1):
             print(f"{i} - {filename}")
 
@@ -103,10 +101,6 @@ class ReportView:
         print(f"\n--- INFORMATIONS DU TOURNOI {tournament.name} ---")
         print(f"{tournament.name} - Date de début : {tournament.date} ")
         input("Appuyez sur Entrée pour revenir au menu...")
-
-    def display_error(self, message):
-        print(f"❌ ERREUR : {message}")
-        input("Appuyer sur Entrée...")
 
     def display_tournament_players(self, tournament, sorted_tournament_players):
         print(f"\n--- LISTE DES JOUEURS (Tri Alphabétique) DU TOURNOI : ---"

@@ -78,7 +78,6 @@ class TournamentView:
         """Affiche l'avancement des inscriptions en cours."""
         print(f"ℹ️ Inscription en cours... ({current_count}/{max_players})")
 
-
     def display_registration_status(self, current_count, max_players):
         """Affiche le statut des inscriptions."""
         print(f"Nombre de joueurs inscrits : {current_count} / {max_players}")
@@ -121,10 +120,10 @@ class TournamentView:
                 choice = int(user_input)
                 if 1 <= choice <= len(file_list):
                     return file_list[choice - 1]
-                # Optionnel : Tu pourrais même utiliser self.display_error() ici !
-                self.display_error(5) # En imaginant que l'erreur 5 est "Numéro invalide"
+
+                self.display_error(5)
             except ValueError:
-                self.display_error(6) # En imaginant que l'erreur 6 est "Entrée invalide (chiffre attendu)"
+                self.display_error(6)
 
     def choose_player_search_method(self):
         """Affiche le menu de sélection de la méthode de recherche d'un joueur."""

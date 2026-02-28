@@ -21,7 +21,7 @@ class Round:
         def backtrack_pairing(unpaired_players):
             if not unpaired_players:
                 return []
-            
+
             p1 = unpaired_players[0]
 
             for i in range(1, len(unpaired_players)):
@@ -36,9 +36,9 @@ class Round:
                         return [(p1, p2)] + result
 
             return None
-        
+
         valid_pairs = backtrack_pairing(players_pool)
-        
+
         if valid_pairs is None:
             print("Attention : Impossible de générer des paires 100% inédites. Forçage du classement...")
             valid_pairs = []
@@ -49,7 +49,7 @@ class Round:
             match = Match(p1, p2)
             match.draw_color()
             self.matchs.append(match)
-            
+
             p1.add_opponent(p2)
             p2.add_opponent(p1)
 
