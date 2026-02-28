@@ -24,6 +24,11 @@ python -m venv env
 source env/bin/activate  # Windows: env\Scripts\activate
 
 ```
+# Pour Mac et Linux :
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+
 
 
 3. **Installer les dépendances** :

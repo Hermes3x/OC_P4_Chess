@@ -16,7 +16,7 @@ class ReportController:
             elif choice == "2":
                 self.all_tournaments()
             elif choice == "3":
-                self.specific_tounament()
+                self.specific_tournament()
             elif choice == "4":
                 self.tournament_players()
             elif choice == "5":
@@ -32,10 +32,10 @@ class ReportController:
         available_files = self.db_controller.get_available_players_files()
 
         if not available_files:
-            self.view.display_error("Aucun fichier de joueurs trouvé dans data/players !")
+            self.view.display_error(1)
             return
 
-        chosen_filename = self.view.display_file_selection_menu(available_files, "Fichiers de joueurs disponibles : ")
+        chosen_filename = self.view.display_file_selection_menu(available_files, 1)
 
         if not chosen_filename:
             return
@@ -50,7 +50,7 @@ class ReportController:
         tournaments_list = self.db_controller.load_all_tournaments()
         self.view.display_tournaments_list(tournaments_list)
 
-    def specific_tounament(self):
+    def specific_tournament(self):
         available_files = self.db_controller.get_available_tournaments_files()
 
         if not available_files:
@@ -67,7 +67,7 @@ class ReportController:
         if tournament_obj:
             self.view.specific_tournament_info(tournament_obj)
         else:
-            self.view.display_error("Tournoi introuvable ou fichier corrompu.")
+            self.view.display_error(2)
 
     def tournament_players(self):
 
@@ -75,11 +75,10 @@ class ReportController:
             available_players = self.db_controller.get_available_players_files()
 
             if not available_players:
-                self.view.display_error("Aucun fichier joueurs disponible")
+                self.view.display_error(1)
                 return
 
-            chosen_players_filename = self.view.display_file_selection_menu(available_players,
-                                                                            "Fichiers de joueurs disponibles : ")
+            chosen_players_filename = self.view.display_file_selection_menu(available_players, 1)
 
             if not chosen_players_filename:
                 return
@@ -89,7 +88,7 @@ class ReportController:
         available_tournaments_files = self.db_controller.get_available_tournaments_files()
 
         if not available_tournaments_files:
-            self.view.display_error("Aucun tournoi trouvé.")
+            self.view.display_error(1)
             return
 
         chosen_tournament_filename = self.view.display_file_selection_menu(available_tournaments_files)
@@ -106,18 +105,17 @@ class ReportController:
             self.view.display_tournament_players(tournament, sorted_players)
 
         else:
-            self.view.display_error("Erreur de chargement du tournoi.")
+            self.view.display_error(2)
 
     def matchs_and_rounds(self):
         if not self.db_controller.players_file:
             available_players = self.db_controller.get_available_players_files()
 
             if not available_players:
-                self.view.display_error("Aucun fichier joueurs disponible")
+                self.view.display_error(1)
                 return
 
-            chosen_players_filename = self.view.display_file_selection_menu(available_players,
-                                                                            "Fichiers de joueurs disponibles : ")
+            chosen_players_filename = self.view.display_file_selection_menu(available_players, 1)
 
             if not chosen_players_filename:
                 return
@@ -126,7 +124,7 @@ class ReportController:
 
         available_tournament_files = self.db_controller.get_available_tournaments_files()
         if not available_tournament_files:
-            self.view.display_error("Aucun fichier trouvé")
+            self.view.display_error(1)
 
         user_choice = self.view.display_file_selection_menu(available_tournament_files)
 
@@ -137,7 +135,7 @@ class ReportController:
         selected_tournament = self.db_controller.load_tournament(full_path)
 
         if not selected_tournament:
-            self.view.display_error("Erreur de chargement du tournoi.")
+            self.view.display_error(2)
             return
 
         self.view.display_tournament_rounds_and_matchs(selected_tournament)

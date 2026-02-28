@@ -1,4 +1,25 @@
 class ReportView:
+
+    ERROR_MESSAGES = {
+        1: "Aucun fichier trouvé (joueurs ou tournois) dans le dossier 'data'.",
+        2: "Erreur : Le fichier est corrompu ou introuvable.",
+        3: "Numéro invalide.",
+        4: "Entrée invalide : veuillez saisir un chiffre.",
+        5: "Choix invalide, veuillez réessayer." # Pour le menu principal des rapports
+    }
+
+    FILE_MENU_PROMPTS = {
+        1: "📂 Fichiers de joueurs disponibles :",
+        2: "📂 Fichiers de tournois disponibles :"
+    }
+
+    def display_error(self, code):
+        """Affiche une erreur spécifique aux rapports."""
+        message = self.ERROR_MESSAGES.get(code, "Erreur inconnue")
+        print(f"\n--- ❌ ERREUR : {message} ---")
+
+    
+
     def display_rapport_choice(self):
         print("\n--- 📊 MENU RAPPORTS 📊 ---")
         print("1 - Liste de tous les joueurs (alphabétique)")
@@ -32,8 +53,11 @@ class ReportView:
         print("\n-------------------------------------------")
         input("Appuyez sur Entrée pour revenir au menu...")
 
-    def display_file_selection_menu(self, file_list, prompt_message="Choisissez un fichier :"):
-        print(prompt_message)
+    def display_file_selection_menu(self, file_list, prompt_code=1):
+        """Affiche une liste de fichiers pour la génération de rapports."""
+        prompt_message = self.FILE_MENU_PROMPTS.get(prompt_code, "Choisissez un fichier :")
+        print(f"\n{prompt_message}")
+        
         for i, filename in enumerate(file_list, start=1):
             print(f"{i} - {filename}")
 
@@ -42,16 +66,16 @@ class ReportView:
         while True:
             user_input = input("Votre choix (numéro) : ").strip()
 
-            if user_input == "0":
+            if user_input == "0" or not user_input:
                 return None
 
             try:
                 choice = int(user_input)
                 if 1 <= choice <= len(file_list):
                     return file_list[choice - 1]
-                print("❌ Numéro invalide.")
+                self.display_error(5)
             except ValueError:
-                print("❌ Veuillez entrer un chiffre.")
+                self.display_error(5)
 
     def display_players_sorted_list(self, players_sorted_list):
         print("\n--- LISTE DES JOUEURS (Tri Alphabétique) ---")

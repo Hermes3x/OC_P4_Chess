@@ -15,25 +15,43 @@ class Round:
         self.end_date = None
 
     def create_matchs(self):
+        """Génère les matchs du round sans aucun doublon via backtracking."""
         players_pool = self.tournament_players.copy()
 
-        while len(players_pool) >= 2:
-            p1 = players_pool.pop(0)
-            opponent = None
+        def backtrack_pairing(unpaired_players):
+            if not unpaired_players:
+                return []
+            
+            p1 = unpaired_players[0]
 
-            for i in range(len(players_pool)):
-                candidate = players_pool[i]
-                if candidate.national_chess_id not in p1.opponents:
-                    opponent = players_pool.pop(i)
-                    break
-            if opponent is None:
-                opponent = players_pool.pop(0)
+            for i in range(1, len(unpaired_players)):
+                p2 = unpaired_players[i]
 
-            match = Match(p1, opponent)
+                if p2.national_chess_id not in p1.opponents:
+                    remaining = unpaired_players[1:i] + unpaired_players[i+1:]
+
+                    result = backtrack_pairing(remaining)
+
+                    if result is not None:
+                        return [(p1, p2)] + result
+
+            return None
+        
+        valid_pairs = backtrack_pairing(players_pool)
+        
+        if valid_pairs is None:
+            print("Attention : Impossible de générer des paires 100% inédites. Forçage du classement...")
+            valid_pairs = []
+            while len(players_pool) >= 2:
+                valid_pairs.append((players_pool.pop(0), players_pool.pop(0)))
+
+        for p1, p2 in valid_pairs:
+            match = Match(p1, p2)
             match.draw_color()
             self.matchs.append(match)
-            p1.add_opponent(opponent)
-            opponent.add_opponent(p1)
+            
+            p1.add_opponent(p2)
+            p2.add_opponent(p1)
 
     def close_round(self):
         all_finished = all((m.player1_score + m.player2_score)

@@ -4,6 +4,42 @@ import datetime
 class TournamentView:
     """Gère l'interface utilisateur console pour la gestion des tournois."""
 
+    ERROR_MESSAGES = {
+        1: "Aucun fichier de joueurs trouvé !",
+        2: "Format de date invalide",
+        3: "Impossible d'ouvrir le fichier sélectionné ",
+        4: "Erreur lors de la sauvegarde",
+        5: "Élément introuvable",
+        }
+
+    EVENT_MESSAGES = {
+        1: "Sauvegarde réussie !",
+        2: "💾 Tournoi '{}' sauvegardé avec succès.",
+        3: "Chargement réussi : {} joueurs récupérés.",
+        4: "Tournoi '{}' chargé avec succès !",
+        5: "Le tournoi est prêt. Début des rounds."
+    }
+
+    # Dictionnaire pour les titres des menus de sélection de fichiers
+    FILE_MENU_PROMPTS = {
+        1: "📂 Veuillez choisir le fichier de joueurs à charger :",
+        2: "📂 Veuillez choisir le tournoi à charger :",
+        3: "📂 Pour charger le tournoi, veuillez d'abord sélectionner le fichier de joueurs de référence :"
+    }
+
+    def display_events(self, code, dynamic_data=""):
+        """Affiche un message d'événement formaté."""
+        raw_message = self.EVENT_MESSAGES.get(code, "Événement enregistré.")
+
+        final_message = raw_message.format(dynamic_data)
+
+        print(f"--- ✅ INFO : {final_message} ---")
+
+    def display_error(self, code):
+        """Affiche un message d'erreur formaté."""
+        message = self.ERROR_MESSAGES.get(code, "Erreur inconnue")
+        print(f"--- ❌ ERREUR : {message} ---")
+
     def get_tournament_data(self):
         """Récupère les informations de base pour la création d'un tournoi."""
         print("Veuillez renseigner les informations du tournoi")
@@ -30,25 +66,46 @@ class TournamentView:
             except ValueError:
                 self.display_error(f"❌Format de {date_saisie} invalide")
 
-    def display_events(self, message):
-        """Affiche un message d'événement général."""
-        print(f"\n📢 {message}")
+    def display_tournament_header(self, tournament_name):
+        """Affiche l'en-tête principal du tournoi."""
+        print(f"\n--- ♟️ GESTION : {tournament_name} ---")
 
-    def display_tournament_menu(self, message):
-        """Affiche l'en-tête du menu du tournoi."""
-        print(f"\n{message}")
+    def display_new_tournament_detected(self):
+        """Affiche le message indiquant qu'un tournoi est vide et nécessite des joueurs."""
+        print("📝 Nouveau tournoi détecté. Veuillez enregistrer les joueurs.")
 
-    def display_error(self, message):
-        """Affiche un message d'erreur formaté."""
-        print(f"❌ ERREUR : {message}")
+    def display_registration_in_progress(self, current_count, max_players):
+        """Affiche l'avancement des inscriptions en cours."""
+        print(f"ℹ️ Inscription en cours... ({current_count}/{max_players})")
+
+
+    def display_registration_status(self, current_count, max_players):
+        """Affiche le statut des inscriptions."""
+        print(f"Nombre de joueurs inscrits : {current_count} / {max_players}")
+
+    def display_registration_paused(self):
+        """Affiche que l'inscription est en pause."""
+        print("\n⚠️ Inscription mise en pause. Retour au menu principal...")
+
+    def display_tournament_ready(self, actual_round, rounds_qty):
+        """Affiche que le tournoi est prêt à commencer/continuer."""
+        print(f"✅ Tournoi prêt ! Round : {actual_round} / {rounds_qty}")
+
+    def display_tournament_play_menu(self):
+        """Affiche les options de jeu du tournoi."""
+        print("1. Jouer le prochain round")
+        print("2. Voir le classement provisoire")
+        print("3. Quitter et revenir au menu principal")
 
     def display_nb_added_players(self, message):
         """Affiche l'état d'avancement du remplissage des joueurs (ex: 3/8)."""
         print(f"📊 {message}")
 
-    def display_file_selection_menu(self, file_list, prompt_message="Choisissez un fichier :"):
-        """Affiche une liste de fichiers JSON et retourne le fichier sélectionné."""
-        print(prompt_message)
+    def display_file_selection_menu(self, file_list, prompt_code=1):
+        """"Affiche une liste de fichiers JSON et retourne le fichier sélectionné."""
+        prompt_message = self.FILE_MENU_PROMPTS.get(prompt_code, "Choisissez un fichier :")
+
+        print(f"{prompt_message}")
         for i, filename in enumerate(file_list, start=1):
             print(f"{i} - {filename}")
 
@@ -64,9 +121,10 @@ class TournamentView:
                 choice = int(user_input)
                 if 1 <= choice <= len(file_list):
                     return file_list[choice - 1]
-                print("❌ Numéro invalide.")
+                # Optionnel : Tu pourrais même utiliser self.display_error() ici !
+                self.display_error(5) # En imaginant que l'erreur 5 est "Numéro invalide"
             except ValueError:
-                print("❌ Entrée invalide : veuillez saisir un chiffre.")
+                self.display_error(6) # En imaginant que l'erreur 6 est "Entrée invalide (chiffre attendu)"
 
     def choose_player_search_method(self):
         """Affiche le menu de sélection de la méthode de recherche d'un joueur."""
@@ -86,7 +144,8 @@ class TournamentView:
         p1 = match.players_pair[0]
         p2 = match.players_pair[1]
 
-        print(f"\nSaisie du score : {p1.last_name} vs {p2.last_name}")
+        print(f"Saisie du score : {p1.first_name} {p1.last_name} ({p1.national_chess_id}) vs "
+              f"{p2.first_name} {p2.last_name} ({p2.national_chess_id})")
         print("1 : Victoire J1 | 2 : Victoire J2 | 0 : Match nul")
 
         while True:

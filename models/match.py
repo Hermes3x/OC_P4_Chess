@@ -36,11 +36,11 @@ class Match:
 
     def __str__(self):
         p1, p2 = self.players_pair
-        return (f'Match {p1.first_name} vs {p2.first_name} | '
-                f'Résultat : {self.player1_score}-{self.player2_score}')
+        return (f"Match {p1.first_name} {p1.last_name} ({p1.national_chess_id}) vs "
+                f"{p2.first_name} {p2.last_name} ({p2.national_chess_id})"
+                f"\nRésultat: {self.player1_score}-{self.player2_score}")
 
     def to_dict(self):
         p1, p2 = self.players_pair
         return ([p1.national_chess_id, self.player1_score, self.player1_color],
-                [p2.national_chess_id, self.player2_score, self.player2_color],
-                )
+                [p2.national_chess_id, self.player2_score, self.player2_color])

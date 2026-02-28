@@ -108,6 +108,7 @@ class DatabaseController:
 
         if updated:
             self.save_players_to_json(self.players_cache)
+            return True
 
     def save_tournament_to_json(self, tournament):
         try:
@@ -207,6 +208,8 @@ class DatabaseController:
                         tournament.players_scores[p2.national_chess_id] += score2
 
                     round_obj.matchs.append(match_obj)
+                    p1.add_opponent(p2)
+                    p2.add_opponent(p1)
 
             tournament.rounds_list.append(round_obj)
             tournament.actual_round = round_obj.rounds_id
