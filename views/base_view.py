@@ -7,5 +7,5 @@ class MainMenuView:
         print("4. Quitter")
         print("-----------------------------------")
 
-        choice = input("Votre Choix")
+        choice = input("Votre Choix (numéro) ")
         return choice

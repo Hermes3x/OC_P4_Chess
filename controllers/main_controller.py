@@ -30,7 +30,7 @@ class MainController:
             # Étape d'inscription des joueurs
             if current_count < max_players:
                 if current_count == 0:
-                    self.tournament_view.display_new_tournament_detected()
+                    self.tournament_view.display_events(6)
                 else:
                     self.tournament_view.display_registration_in_progress(current_count, max_players)
 
@@ -109,7 +109,7 @@ class MainController:
                 if id_input:
                     chosen_player = self.db_controller.find_player_by_id(id_input)
                     if not chosen_player:
-                        self.tournament_view.display_player_id_not_found(id_input)
+                        self.tournament_view.display_error(6, id_input)
 
             # OPTION 2 : Recherche par Nom exact
             elif choice == "2":
@@ -120,7 +120,7 @@ class MainController:
                         idx = self.tournament_view.display_players_list_selection(found)
                         chosen_player = found[idx]
                     else:
-                        self.tournament_view.display_player_name_not_found(name_input)
+                        self.tournament_view.display_error(7, name_input)
 
             # OPTION 3 : Recherche par Début du nom
             elif choice == "3":
@@ -131,7 +131,7 @@ class MainController:
                         idx = self.tournament_view.display_players_list_selection(found)
                         chosen_player = found[idx]
                     else:
-                        self.tournament_view.display_player_name_not_found(start_input)
+                        self.tournament_view.display_error(7, start_input)
 
             # OPTION 4 : Création Manuelle d'un nouveau joueur et mise à jour du fichier JSON joueurs
             elif choice == "4":
@@ -150,15 +150,15 @@ class MainController:
             # Finalisation de l'ajout de joueurs au tournoi
             if chosen_player:
                 if chosen_player.national_chess_id in forbidden_ids:
-                    self.tournament_view.display_player_ever_added(chosen_player)
+                    self.tournament_view.display_error(8, chosen_player)
                 else:
                     tournament.add_player(chosen_player)
                     forbidden_ids.add(chosen_player.national_chess_id)
-                    self.tournament_view.display_player_added(chosen_player)
+                    self.tournament_view.display_events(7, f"{chosen_player.first_name} {chosen_player.last_name}")
 
                     # Mise à jour du compteur
                     count = len(tournament.tournament_players)
-                    self.tournament_view.display_nb_added_players(f"({count}/{max_players} joueurs).")
+                    self.tournament_view.display_registration_status(count, max_players)
 
                     # Sauvegarde
                     if self.db_controller.save_tournament_to_json(tournament):
@@ -194,7 +194,7 @@ class MainController:
             self.tournament_view.display_events(2, tournament.name)
         else:
             self.tournament_view.display_error(4)
-        self.tournament_view.display_round_matchs_saving(new_round)
+        self.tournament_view.display_events(9, new_round)
 
     def run(self):
         """Point d'entrée principal : affiche le menu de démarrage d'un tournoi."""
@@ -254,8 +254,7 @@ class MainController:
                 tournament = self.db_controller.load_tournament(full_path)
 
                 if tournament:
-                    self.tournament_view.display_events(2, tournament.name)
-                    self.tournament_view.display_tournament_loaded(tournament)
+                    self.tournament_view.display_events(4, tournament.name)
 
                     # Vérification des joueurs orphelins (ID absent de la DB)
                     if hasattr(tournament, 'missing_players') and tournament.missing_players:

@@ -5,25 +5,29 @@ import os
 
 
 class DatabaseController:
+    """Gère toutes les interactions avec les fichiers JSON (sauvegarde et chargement)."""
+
     def __init__(self):
+        """Initialise le contrôleur de base de données"""
         self.players_file = None
         self.players_cache = []
 
     def get_available_players_files(self):
+        """Retourne la liste des fichiers de joueurs (format .json) disponibles dans le dossier data."""
         directory = "data/players"
         if not os.path.exists(directory):
             return []
         return [f for f in os.listdir(directory) if f.endswith(".json")]
 
     def get_available_tournaments_files(self):
+        """Retourne la liste des fichiers de tournois (format .json) disponibles dans le dossier data."""
         directory = "data/tournaments"
         if not os.path.exists(directory):
             return []
         return [f for f in os.listdir(directory) if f.endswith(".json")]
 
     def set_players_file(self, json_players_filename):
-        if not json_players_filename.endswith(".json"):
-            json_players_filename += ".json"
+        """Définit le fichier de joueurs actif et charge son contenu en mémoire"""
 
         full_path_json_players_filename = os.path.join(
             "data/players", json_players_filename)
@@ -36,7 +40,7 @@ class DatabaseController:
         return True
 
     def find_player_by_id(self, target_id):
-        # On cherche directement dans le cache mémoire
+        """Cherche un joueur par son ID National d'échecs dans le cache mémoire."""
         for player in self.players_cache:
             if player.national_chess_id == target_id:
                 return player
@@ -44,6 +48,7 @@ class DatabaseController:
         return None
 
     def find_player_by_name(self, target_name):
+        """Cherche un ou plusieurs joueurs par leur nom complet"""
         found_players = []
         target = target_name.lower()
         for player in self.players_cache:
@@ -54,22 +59,26 @@ class DatabaseController:
         return found_players
 
     def find_players_name_start_with(self, target_name_start):
+        """Cherche tous les joueurs dont le nom commence par les lettres saisies."""
         found_players = []
-
         target = target_name_start.lower()
+
         for player in self.players_cache:
             full_name = f"{player.last_name} {player.first_name}".lower()
+
             if full_name.startswith(target):
                 found_players.append(player)
 
         return found_players
 
     def save_players_to_json(self, players_list):
+        """Écrase le fichier global des joueurs avec la nouvelle liste."""
         if not self.players_file:
             return False
 
         serialized_players = []
         for player in players_list:
+            # c'est quoi to_dict ici?
             serialized_players.append(player.to_dict())
 
         os.makedirs(os.path.dirname(self.players_file), exist_ok=True)
@@ -78,6 +87,7 @@ class DatabaseController:
             json.dump(serialized_players, file, indent=4)
 
     def load_players_from_json(self):
+        """Lit le fichier JSON et recrée les objets Player."""
         if not self.players_file or not os.path.exists(self.players_file):
             return []
 
@@ -95,6 +105,7 @@ class DatabaseController:
         return loaded_players
 
     def update_global_players_to_json(self, tournament_players):
+        """Vérifie si les joueurs du tournoi existent dans le cache, sinon les ajoute et sauvegarde."""
         if not self.players_file:
             return
 
@@ -111,6 +122,7 @@ class DatabaseController:
             return True
 
     def save_tournament_to_json(self, tournament):
+        """Sérialise l'objet tournoi et le sauvegarde dans un fichier JSON."""
         try:
             clean_name = tournament.name.replace(" ", "_").lower()
             filename = f"data/tournaments/{clean_name}.json"
@@ -121,12 +133,14 @@ class DatabaseController:
             with open(filename, 'w', encoding="utf-8") as file:
                 json.dump(data, file, indent=4)
 
-            return True  # <--- INDISPENSABLE pour que le MainController sache que ça a marché
+            return True
+
         except Exception as e:
             print(f"Erreur lors de l'écriture : {e}")
-            return False  # <--- Indique l'échec au contrôleur
+            return False
 
     def load_tournament(self, filename):
+        """Reconstruit un objet Tournament complet à partir d'un fichier JSON."""
         if not os.path.exists(filename):
             return None
 
@@ -137,25 +151,25 @@ class DatabaseController:
             data['name'], data['place'], data['date'],
             data['round_qty'], data['note'], data.get('end_date')
         )
+
         tournament.actual_round = data.get('actual_round', 0)
 
         players_map = {p.national_chess_id: p for p in self.players_cache}
 
-        # On crée une liste vide directement DANS l'objet tournoi
         tournament.missing_players = []
 
         for player_id in data['players_ids']:
             if player_id in players_map:
                 tournament.add_player(players_map[player_id])
             else:
-                # On stocke dans l'objet tournoi au lieu de faire un print
                 tournament.missing_players.append(player_id)
 
         self._load_rounds(tournament, data['rounds_list'], players_map)
 
-        return tournament  # ON NE RENVOIE PLUS DE TUPLE, JUSTE L'OBJET
+        return tournament
 
     def load_all_tournaments(self):
+        """Parcourt le dossier tournaments et charge tous les tournois (pour les rapports)."""
         tournaments = []
         directory = "data/tournaments"
 
@@ -172,19 +186,14 @@ class DatabaseController:
         return tournaments
 
     def _load_rounds(self, tournament, rounds_data, players_map):
+        """Méthode privée : Recrée les objets Round et Match depuis les données JSON."""
         from models.round import Round
         from models.match import Match
 
         for round_dict in rounds_data:
             round_obj = Round(tournament)
 
-            # CORRECTION : Sécurité sur le split pour éviter le crash si format différent
-            r_id_str = str(round_dict['round_id'])
-            if ' ' in r_id_str:
-                round_obj.rounds_id = int(r_id_str.split(' ')[1])
-            else:
-                round_obj.rounds_id = int(r_id_str)
-
+            round_obj.rounds_id = int(round_dict['round_id'])
             round_obj.start_date = round_dict['start_date']
             round_obj.end_date = round_dict['end_date']
 

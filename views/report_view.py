@@ -30,7 +30,7 @@ class ReportView:
         return input("Veuillez choisir le rapport à éditer : ")
 
     def display_tournament_rounds_and_matchs(self, tournament):
-        print(f"\n--- ⚔️ MATCHS & ROUNDS : {tournament.name} ---")
+        print(f"\n--- ⚔️  MATCHS & ROUNDS : {tournament.name}  {tournament.date}  {tournament.place} ---")
 
         if not tournament.rounds_list:
             print("Aucun round joué pour le moment.")
@@ -71,9 +71,9 @@ class ReportView:
                 choice = int(user_input)
                 if 1 <= choice <= len(file_list):
                     return file_list[choice - 1]
-                self.display_error(5)
+                self.display_error(3)
             except ValueError:
-                self.display_error(5)
+                self.display_error(4)
 
     def display_players_sorted_list(self, players_sorted_list):
         print("\n--- LISTE DES JOUEURS (Tri Alphabétique) ---")

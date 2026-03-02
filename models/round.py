@@ -69,7 +69,7 @@ class Round:
 
     def to_dict(self):
         return {
-            'round_id': f"Round {self.rounds_id}",
+            'round_id': self.rounds_id,
             'start_date': str(self.start_date),
             'end_date': str(self.end_date) if self.end_date else None,
             'matchs': [match.to_dict() for match in self.matchs]

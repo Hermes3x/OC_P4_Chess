@@ -340,5 +340,17 @@
         "last_name": "Moutier",
         "birth_date": "29/06/2000",
         "national_chess_id": "TT22145"
+    },
+    {
+        "first_name": "Fred",
+        "last_name": "Ibond",
+        "birth_date": "27/06/1998",
+        "national_chess_id": "RF55649"
+    },
+    {
+        "first_name": "Bernard",
+        "last_name": "Ruff",
+        "birth_date": "11/09/2001",
+        "national_chess_id": "GD56499"
     }
 ]

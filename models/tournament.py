@@ -27,11 +27,9 @@ class Tournament:
         if len(self.rounds_list) > 0:
             last_round = self.rounds_list[-1]
             if last_round.end_date is None:
-                print(f"Le round {self.actual_round} n'est pas terminé")
                 return None
 
         if len(self.rounds_list) >= self.rounds_qty:
-            print("Le tournoi est terminé")
             return None
 
         self.actual_round += 1
