@@ -97,7 +97,7 @@ class TournamentView:
                 datetime.datetime.strptime(date_saisie, "%d/%m/%Y")
                 return date_saisie
             except ValueError:
-                self.display_error(f"❌Format de {date_saisie} invalide")
+                self.display_error(2, date_saisie)
 
     def display_tournament_header(self, tournament_name):
         """Affiche le titre principal du menu de gestion d'un tournoi.
