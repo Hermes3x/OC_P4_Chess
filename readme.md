@@ -60,3 +60,13 @@ Au démarrage, vous devriez voir l'affichage suivant :
 ----------------------------------------
 Votre choix (1-4) :
 ```
+
+
+## Générer un rapport Flake8 (HTML)
+
+Ce projet utilise `flake8` et son extension `flake8-html` pour vérifier la qualité du code et le respect des conventions PEP 8. 
+
+Pour générer un nouveau rapport, ouvrez votre terminal, placez-vous à la racine du projet et exécutez la commande suivante :
+
+```bash
+flake8 --format=html --htmldir=flake8_rapport
