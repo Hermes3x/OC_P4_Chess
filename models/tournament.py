@@ -38,9 +38,9 @@ class Tournament:
         """Prépare et génère le round suivant du tournoi.
         Gère le tri des joueurs (aléatoire pour le round 1, selon le classement ensuite).
         Returns:
-            Round ou None: Le nouvel objet Round créé, ou None si impossible 
+            Round ou None: Le nouvel objet Round créé, ou None si impossible
                            (round précédent non terminé ou limite de rounds atteinte)"""
-        
+
         # Vérifie si le round précédent est bien terminé
         if len(self.rounds_list) > 0:
             last_round = self.rounds_list[-1]
