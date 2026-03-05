@@ -352,5 +352,11 @@
         "last_name": "Ruff",
         "birth_date": "11/09/2001",
         "national_chess_id": "GD56499"
+    },
+    {
+        "first_name": "Raymond",
+        "last_name": "G\u00e9rard",
+        "birth_date": "12/11/19766",
+        "national_chess_id": "GT55478"
     }
 ]
